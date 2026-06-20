@@ -111,7 +111,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 
         const result = await cloudinary.uploader.upload(fileBuffer, {
             folder: "uploads",
-            public_id: `PIMG_${Date.now()}`, // optional
+            public_id: `PIMG_${Date.now()}`, // optional 
             overwrite: true,
         });
 
