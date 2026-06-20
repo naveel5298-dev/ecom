@@ -109,7 +109,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         console.log(req.file);
         const fileBuffer = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
 
-        const result = await cloudinary.uploader.upload(fileBuffer, {
+        const result = await cloudinary.uploader.upload(fileBuffer , {
             folder: "uploads",
             public_id: `PIMG_${Date.now()}`, // optional
             overwrite: true,
