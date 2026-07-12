@@ -13,7 +13,7 @@ interface ProductAttributes {
   productImage?: string;
   productUnit:string;
   productStock?:number;
-  productStatus?:number;
+  productStatus?:string;
   productRating?:number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -31,7 +31,7 @@ export class Product extends Model<ProductAttributes>
   public cat_id!: number;
   public productUnit!: string;
   public productStock?: number;
-  public productStatus?: number;
+  public productStatus?: string;
   public productRating?: number;
   public productImage?: string;
   public readonly createdAt!: Date;
@@ -78,9 +78,11 @@ Product.init(
       defaultValue: 0,
     },
     productStatus: {
-      type: DataTypes.INTEGER,
+      //type: DataTypes.INTEGER,
+      type : DataTypes.STRING(20),
       allowNull: true,
-      defaultValue: 1, // 1 for active, 0 for inactive
+      //defaultValue: 1, // 1 for active, 0 for inactive
+      defaultValue : "active"
     },
     productRating: {  
       type: DataTypes.DECIMAL(3, 2),

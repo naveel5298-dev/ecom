@@ -17,4 +17,5 @@ authRouter.get("/check",authController.getData);
 authRouter.post("/formData",multer().none(),authController.formDataHandle);
 
 authRouter.get("/check/:id",authController.getDataByParam);
+authRouter.post("/logout",authController.logout);
 export default authRouter;

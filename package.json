@@ -10,7 +10,7 @@
     "dev": "tsx watch src/index.ts",
     "audit": "npm audit",
     "lint": "eslint \"src/**/*.ts\"",
-  "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write ."
   },
   "keywords": [],
@@ -54,9 +54,9 @@
     "mysql2": "^3.15.3",
     "nodemailer": "^7.0.12",
     "pdfkit": "^0.18.0",
+    "redis": "^6.1.0",
     "sequelize": "^6.37.7",
     "sequelize-typescript": "^2.1.6",
     "uuid": "^13.0.0"
   }
 }
-

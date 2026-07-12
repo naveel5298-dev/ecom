@@ -23,6 +23,10 @@ applyPerformance(app); // application level middleware
 applySecurity(app); // application level middleware
 
 
+// app.use("/",function(req,res){
+//     console.log(res.json({status:"success"}))
+    
+// })
 app.use("/api/v1/auth",authRouter); // router based middleware
 app.use("/api/v1/product",productRouter)
 app.use("/api/v1/cart",cartRouter)

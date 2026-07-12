@@ -3,6 +3,7 @@ import { Product } from "../model/product.model"
 import { Request, Response } from "express";
 import cloudinary from "../config/cloudinary";
 import { Category } from "../model/category.model";
+import redisClient from "../config/redis";
 
 
 export const createProduct = async (req: Request, res: Response) => {
@@ -57,6 +58,13 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const getProduct = async (req: Request, res: Response) => {
     try {
+        if(await redisClient.get(`products`)){
+            const cachedProducts = await redisClient.get(`products`);
+            if (cachedProducts) {
+                const products = JSON.parse(cachedProducts);
+                return res.json({ status: 'success', message: "products Found Successfully", data: { total: products.length, items: products, count: products.length } });
+            }
+        }
         const page = parseInt((req.query.page as string) || '1', 10);
         const search = (req.query.search as string) || undefined;
         //console.log("current pages ",page);
@@ -69,6 +77,7 @@ export const getProduct = async (req: Request, res: Response) => {
             where.productName = { [Op.like]: `%${search}%` };
         const result = await Product.findAndCountAll({ where, limit, offset });
         //  console.log(result)
+        redisClient.setEx(`products`, 3600, JSON.stringify(result.rows));
         if (result.rows.length === 0) {
             return res.status(500).json({ status: "failed", message: "Product Not available" })
         }

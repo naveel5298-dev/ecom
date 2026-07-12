@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyJwt, TokenPayload } from '../utils/jwt';
+import redisClient from '../config/redis';
 
 export interface RequestWithUser extends Request {
     user?: TokenPayload;
@@ -13,6 +14,12 @@ export const requireAuth = async (req: RequestWithUser, res: Response, next: Nex
 
     const token:any = authHeader.split(' ')[1];                                                                                         
     console.log(token);
+
+      // Check if token is blacklisted
+        const blacklisted = await redisClient.get(`bl:${token}`);
+        if (blacklisted) {
+            return res.status(401).json({ status: 'failed', message: 'Token revoked' });
+        }
 
     try {
         const decoded = verifyJwt<TokenPayload>(token);
