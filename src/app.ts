@@ -7,6 +7,7 @@ import cartRouter from "./routes/cartrouter";
 import categoryRouter from "./routes/category.router";
 import orderRouter from "./routes/OrderRouter";
 import paymentRouter from "./routes/paymentRouter";
+import checkoutRouter from "./routes/checkout.routes";
 
 
 
@@ -34,5 +35,6 @@ app.use("/api/v1/cart",cartRouter)
 app.use("/api/v1/category",categoryRouter)
 app.use("/api/v1/order",orderRouter)
 app.use("/api/v1/payment",paymentRouter)
+app.use("/api/v1/checkout",checkoutRouter)
 
 export default app;

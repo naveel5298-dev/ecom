@@ -5,5 +5,6 @@ import '../model/cart.model';
 import '../model/category.model';
 import '../model/order.model';
 import '../model/orderdeatils.model';
+import '../model/payment.model';
 
 export { };

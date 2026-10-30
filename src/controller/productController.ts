@@ -8,19 +8,19 @@ import redisClient from "../config/redis";
 
 export const createProduct = async (req: Request, res: Response) => {
     try {
-        const { productName, productPrice, description, sku, cat_id, productUnit, productStock, productStatus, productRating, image } = req.body;
-        // if (!req.file ) {
-        //     return res.status(400).json({ status: "failed", message: "file unavailable" })
-        // }
-        // console.log(req.file);
-        // const fileBuffer = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+        const { productName, productPrice, description, sku, cat_id, productUnit, productStock, productStatus, productRating } = req.body;
+        if (!req.file ) {
+            return res.status(400).json({ status: "failed", message: "file unavailable" })
+        }
+        console.log(req.file);
+        const fileBuffer = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
 
-        const result = await cloudinary.uploader.upload(image, {
+        const result = await cloudinary.uploader.upload(fileBuffer, {
             folder: "uploads",
             public_id: `PIMG_${Date.now()}`, //~ optional
             overwrite: true,
         });
-        console.log(result)
+        console.log("file resullt",result)
 
         // Transform the image: auto-crop to square aspect_ratio
         // const finalUrl = cloudinary.url(result.public_id, {
@@ -33,27 +33,54 @@ export const createProduct = async (req: Request, res: Response) => {
         // });
         // console.log(finalUrl);    
 
+        
 
-        const product = await Product.create({
-            productName,
-            productPrice,
-            description,
-            sku,
-            cat_id: cat_id,
-            productUnit,
-            productStock,
-            productStatus,
-            productRating,
-            productImage: result.secure_url 
-            // productImage:finalUrl
-        })
+        console.log("Product data before insert:", {
+    productName,
+    productPrice,
+    description,
+    sku,
+    cat_id,
+    productUnit,
+    productStock,
+    productStatus,
+    productRating,
+    productImage: result.secure_url
+});
+
+const product = await Product.create({
+    productName,
+    productPrice,
+    description,
+    sku,
+    cat_id,
+    productUnit,
+    productStock,
+    productStatus,
+    productRating,
+    productImage: result.secure_url
+});
+
+// Clear cached products
+await redisClient.del("products");
+
+console.log("Product successfully created:", product);
 
         return res.status(201).json({ status: "Success", message: "Product Added Successfully", data: product })
     }
 
-    catch (error) {
-        return res.status(500).json({ status: "failed", message: "Failed to Add New Product", error })
-    }
+   catch (error: any) {
+    console.error("CREATE PRODUCT ERROR:", error);
+    console.error("SQL ERROR:", error.original);
+    console.error("VALIDATION ERROR:", error.errors);
+
+    return res.status(500).json({
+        status: "failed",
+        message: "Failed to Add New Product",
+        error: error.message,
+        details: error.original?.sqlMessage || null
+    });
+}
 }
 
 export const getProduct = async (req: Request, res: Response) => {

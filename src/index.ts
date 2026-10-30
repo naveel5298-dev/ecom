@@ -58,8 +58,8 @@ async function testDB() {
     console.log("✅ Database connection successful!");
     const alter: boolean = process.env.NODE_ENV === 'production' ? false : true;
     // console.log(sequelize.models);
-    await sequelize.sync({ alter: false });
-    //await sequelize.sync({force:true}); // {force:true} {alter:true} apply only development mode
+    await sequelize.sync({ alter:false }); // {force:true} {alter:true} apply only development mode
+    //await sequelize.sync({force:true}); // {force:true} {alter:true} apply only develo  pment mode
     console.log("✅ Models synced");
   } catch (error) {
     console.error("❌ Unable to connect to the database:", error);

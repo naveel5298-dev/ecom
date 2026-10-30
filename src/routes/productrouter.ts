@@ -14,7 +14,7 @@ import multer from "multer";
 
 export const cloud = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 3 * 1024 * 1024 }, // 1MB
+  limits: { fileSize: 3 * 1024 * 1024 }, // 3MB
 });
 
 const productRouter = Router();
@@ -29,7 +29,7 @@ productRouter.get("/allproducts",  getProduct);
 productRouter.get("/getbyid",getProductByid);
 
 //productRouter.use(requireAuth);
-productRouter.post("/add",cloud.single("productImage"),createProduct);
+productRouter.post("/add",cloud.single("image"),createProduct);
 productRouter.put("/update/:id",updateProduct);
 productRouter.delete("/remove/:id",removeProduct);
 productRouter.get("/getbycategory/:id", getProductBycatId);

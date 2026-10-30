@@ -6,12 +6,16 @@ import Cart from "../model/cart.model";
 import { it } from "node:test";
 import { totalmem } from "os";
 import { ADDRGETNETWORKPARAMS } from "dns";
+import { sequelize } from "../config/db";
 
 export const addTocart = async (req: RequestWithUser, res: Response) => {
     try {
         const { productId, quantity } = req.body;
 
         const userId = req.user?.id;
+     
+        console.log("Authenticated user:", req.user);
+console.log("User ID:", req.user?.id);
 
         // Validation
         if (!productId || !quantity || !userId) {
@@ -25,7 +29,9 @@ export const addTocart = async (req: RequestWithUser, res: Response) => {
         }
 
         // Check if user exists
-        const user = await Product.findByPk(userId)
+        const user = await User.findByPk(userId)
+        console.log("User query result:", user);
+console.log("User JSON:", user?.toJSON());
         if (!user) {
             return res.status(400).json({ message: "User Not Found" })
         }

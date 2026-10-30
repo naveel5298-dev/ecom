@@ -87,3 +87,10 @@ OrderDetails.init(
 // Define Association
 OrderDetails.belongsTo(Product, { foreignKey: "productId", as: "product" });
 export default OrderDetails;
+
+// Define Association rzrp
+// OrderDetails.belongsTo(Order, {
+//   foreignKey: "orderId",
+//   as: "order",
+//   targetKey: "id",
+// });
