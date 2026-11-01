@@ -6,7 +6,7 @@ dotenv.config();
 const DATABASE = process.env.DB_NAME;
 const USER = process.env.DB_USER;
 const PASSWORD = process.env.DB_PASS;
-console.log(DATABASE,USER,PASSWORD);
+//console.log(DATABASE,USER,PASSWORD);
 
 export const sequelize = new Sequelize(
   // Settings.db_dilect,
