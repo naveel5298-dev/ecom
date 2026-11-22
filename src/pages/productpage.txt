@@ -1,0 +1,243 @@
+import { Link, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { SlidersHorizontal, Grid3X3, List, ChevronDown, Star, X } from "lucide-react";
+import { ProductCard } from "@/components/product-card";
+import { products, categories } from "@/lib/mock-data";
+
+interface ProductSearch {
+  category?: string;
+  sort?: string;
+}
+
+export function ProductsPage() {
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get("category") || undefined;
+  const sort = searchParams.get("sort") || undefined;
+  const [gridView, setGridView] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+  const [priceRange, setPriceRange] = useState([0, 50000]);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState(category || "");
+
+  let filtered = [...products];
+  if (selectedCategory) filtered = filtered.filter((p) => p.category === selectedCategory);
+  if (selectedRating) filtered = filtered.filter((p) => p.rating >= selectedRating);
+  filtered = filtered.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
+
+  if (sort === "price-low") filtered.sort((a, b) => a.price - b.price);
+  else if (sort === "price-high") filtered.sort((a, b) => b.price - a.price);
+  else if (sort === "rating") filtered.sort((a, b) => b.rating - a.rating);
+  else if (sort === "discount") filtered.sort((a, b) => b.discount - a.discount);
+
+  const activeFilters = [
+    selectedCategory && categories.find((c) => c.id === selectedCategory)?.name,
+    selectedRating && `${selectedRating}★ & above`,
+  ].filter(Boolean);
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+        <Link to="/" className="hover:text-foreground">
+          Home
+        </Link>
+        <span>/</span>
+        <span className="text-foreground font-medium">Products</span>
+        {selectedCategory && (
+          <>
+            <span>/</span>
+            <span className="text-foreground font-medium">
+              {categories.find((c) => c.id === selectedCategory)?.name}
+            </span>
+          </>
+        )}
+      </nav>
+
+      {/* Toolbar */}
+      <div className="flex items-center justify-between mb-4 gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium hover:bg-muted transition-colors"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            Filters
+          </button>
+          <span className="text-sm text-muted-foreground">{filtered.length} products</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <select
+            defaultValue={sort || "relevance"}
+            className="h-9 px-3 pr-8 rounded-xl border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+            onChange={(e) => {
+              const newParams = new URLSearchParams(searchParams);
+              newParams.set("sort", e.target.value);
+              // In a real app we'd also want to push the searchParams to the URL
+            }}
+          >
+            <option value="relevance">Relevance</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
+            <option value="discount">Biggest Discount</option>
+          </select>
+
+          <div className="hidden sm:flex items-center border rounded-xl overflow-hidden">
+            <button
+              onClick={() => setGridView(true)}
+              className={`p-2 ${gridView ? "bg-muted" : "hover:bg-muted/50"} transition-colors`}
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setGridView(false)}
+              className={`p-2 ${!gridView ? "bg-muted" : "hover:bg-muted/50"} transition-colors`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Active filters */}
+      {activeFilters.length > 0 && (
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          {activeFilters.map((f) => (
+            <span
+              key={f}
+              className="flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium"
+            >
+              {f}
+              <button
+                onClick={() => {
+                  setSelectedCategory("");
+                  setSelectedRating(0);
+                }}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+          <button
+            className="text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              setSelectedCategory("");
+              setSelectedRating(0);
+            }}
+          >
+            Clear all
+          </button>
+        </div>
+      )}
+
+      <div className="flex gap-6">
+        {/* Sidebar filters - desktop */}
+        <aside
+          className={`${showFilters ? "fixed inset-0 z-50 bg-black/40 lg:relative lg:bg-transparent" : "hidden"} lg:block lg:w-56 shrink-0`}
+        >
+          <div
+            className={`${showFilters ? "absolute right-0 top-0 h-full w-72 bg-card p-4 shadow-xl lg:relative lg:w-auto lg:shadow-none lg:p-0" : ""}`}
+          >
+            {showFilters && (
+              <button
+                className="lg:hidden mb-4 text-sm font-medium"
+                onClick={() => setShowFilters(false)}
+              >
+                ✕ Close
+              </button>
+            )}
+
+            {/* Categories */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold mb-3 font-[var(--font-heading)]">Category</h3>
+              <div className="space-y-1.5">
+                <button
+                  onClick={() => setSelectedCategory("")}
+                  className={`block w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors ${!selectedCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"}`}
+                >
+                  All Categories
+                </button>
+                {categories.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => setSelectedCategory(c.id)}
+                    className={`block w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors ${selectedCategory === c.id ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"}`}
+                  >
+                    {c.icon} {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Rating */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold mb-3 font-[var(--font-heading)]">Rating</h3>
+              <div className="space-y-1.5">
+                {[4, 3, 2].map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => setSelectedRating(selectedRating === r ? 0 : r)}
+                    className={`flex items-center gap-2 w-full px-3 py-1.5 rounded-lg text-sm transition-colors ${selectedRating === r ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}
+                  >
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: r }).map((_, i) => (
+                        <Star key={i} className="w-3 h-3 fill-warning text-warning" />
+                      ))}
+                    </div>
+                    <span>& above</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Delivery */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3 font-[var(--font-heading)]">Delivery</h3>
+              <label className="flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer">
+                <input type="checkbox" className="rounded border-input" />
+                Free Delivery
+              </label>
+            </div>
+          </div>
+        </aside>
+
+        {/* Product grid */}
+        <div className="flex-1">
+          {filtered.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="text-5xl mb-4">🔍</div>
+              <h3 className="text-lg font-semibold font-[var(--font-heading)] mb-2">
+                No products found
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Try adjusting your filters or search query.
+              </p>
+              <button
+                onClick={() => {
+                  setSelectedCategory("");
+                  setSelectedRating(0);
+                }}
+                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium"
+              >
+                Clear Filters
+              </button>
+            </div>
+          ) : (
+            <div
+              className={
+                gridView
+                  ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
+                  : "space-y-3"
+              }
+            >
+              {filtered.map((p, i) => (
+                <ProductCard key={p.id} product={p} index={i} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
