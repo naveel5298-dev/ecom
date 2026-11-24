@@ -11,6 +11,8 @@ interface Settings{
     db_password:string
     db_host:string
     secret_key:string
+    razorpay_key_id:string
+    razorpay_key_secret:string
 }
 
 export const Settings:Settings  = {
@@ -22,6 +24,8 @@ export const Settings:Settings  = {
   db_user:process.env.DB_USER as string,
   db_password:process.env.DB_PASS as string,
   db_host:process.env.DB_HOST as string,
-  secret_key:process.env.JWT_SECRET as string
+  secret_key:process.env.JWT_SECRET as string,
+  razorpay_key_id:process.env.RAZORPAY_KEY_ID as string,
+  razorpay_key_secret:process.env.RAZORPAY_KEY_SECRET as string
 }
 

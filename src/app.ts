@@ -9,6 +9,9 @@ import orderRouter from "./routes/OrderRouter";
 import paymentRouter from "./routes/paymentRouter";
 import checkoutRouter from "./routes/checkout.routes";
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 
 
 const app = express();
@@ -38,3 +41,32 @@ app.use("/api/v1/payment",paymentRouter)
 app.use("/api/v1/checkout",checkoutRouter)
 
 export default app;
+
+
+///////
+import fs from "fs";
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// React build folder in project root
+const frontendPath = path.resolve(__dirname, "../dist");
+
+if (!fs.existsSync(path.join(frontendPath, "index.html"))) {
+    throw new Error(`React build not found: ${frontendPath}`);
+}
+
+// Register API routes BEFORE frontend serving
+
+app.use(express.static(frontendPath));
+
+// React Router fallback (Express 5)
+app.get("/{*splat}", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+app.listen(8000, () => {
+    console.log("Server running on port 8000");
+});
+
