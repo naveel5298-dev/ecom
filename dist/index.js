@@ -2129,6 +2129,7 @@ var checkout_routes_default = router;
 // src/app.ts
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 var app = express6();
 app.use(express6.json({ limit: "1024kb" }));
 app.use(express6.urlencoded({ extended: true, limit: "1024kb" }));
@@ -2144,12 +2145,16 @@ app.use("/api/v1/checkout", checkout_routes_default);
 var app_default = app;
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = path.dirname(__filename);
-app.use(express6.static(path.join(__dirname, "build")));
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+var frontendPath = path.resolve(__dirname, "../dist");
+if (!fs.existsSync(path.join(frontendPath, "index.html"))) {
+  throw new Error(`React build not found: ${frontendPath}`);
+}
+app.use(express6.static(frontendPath));
+app.get("/{*splat}", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
-app.listen(9e3, () => {
-  console.log("Server running on port 9000");
+app.listen(8e3, () => {
+  console.log("Server running on port 8000");
 });
 
 // src/index.ts
