@@ -51,7 +51,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // React build folder in project root
-const frontendPath = path.resolve(__dirname, "../dist");
+const frontendPath = path.resolve(__dirname, "../public");
 
 if (!fs.existsSync(path.join(frontendPath, "index.html"))) {
     throw new Error(`React build not found: ${frontendPath}`);

@@ -2145,7 +2145,7 @@ app.use("/api/v1/checkout", checkout_routes_default);
 var app_default = app;
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = path.dirname(__filename);
-var frontendPath = path.resolve(__dirname, "../dist");
+var frontendPath = path.resolve(__dirname, "../public");
 if (!fs.existsSync(path.join(frontendPath, "index.html"))) {
   throw new Error(`React build not found: ${frontendPath}`);
 }
